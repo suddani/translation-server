@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+echo Running in $(readlink -f $DIR/../)
+docker run -it --name translation-server --rm -e PORT=3000 -e HOST=0.0.0.0 -p 3000:3000 -v $(readlink -f $DIR/../):/app github.com/suddani/translation-server:latest $*

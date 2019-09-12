@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+thin -a $HOST -p $PORT -R config.ru start
