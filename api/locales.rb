@@ -7,7 +7,7 @@ class Locales < Grape::API
     requires :namespace, type: String
   end
   get 'locales/:project/:lang/:namespace' do
-    GetTranslation.call(params)
+    GetTranslation.call(declared(params))
   end
 
   params do
