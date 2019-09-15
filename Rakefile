@@ -12,3 +12,17 @@ namespace :db do
     end
   end
 end
+
+
+desc "Export translations"
+task :translate, [:project] do |t, args|
+  GetTranslationGroups.call(project: args[:project]).each do |lang, namespaces|
+    GetTranslationsForLanguage.call(project: args[:project], lang: lang).each do |namespace, translations|
+      output = Pathname.new("output/#{args[:project]}/#{lang}")
+      output.mkpath
+      File.write(output.join("#{namespace}.json"), JSON.pretty_generate(
+        Hash[translations.map {|translation| [translation.key, translation.translation]}]
+      ))
+    end
+  end
+end
