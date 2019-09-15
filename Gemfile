@@ -7,6 +7,10 @@ gem 'pry'
 gem 'grape'
 gem 'grape-swagger'
 gem 'sequel'
+
+gem 'dry-types'
+gem 'dry-struct'
+
 group :development do
   # Code reloading
   # See: https://guides.hanamirb.org/projects/code-reloading

@@ -16,6 +16,7 @@ class GetTranslation
   end
 
   def call
+    # raise "Unknown language" if lang == "dev"
     Hash[translation_repository.retrieve(
       project: project,
       lang: lang,

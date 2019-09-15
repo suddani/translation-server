@@ -7,14 +7,14 @@ class AddTranslation
               :lang,
               :namespace,
               :translation,
-              :translation_repository
+              :repository
 
-  def initialize(args, translation_repository: TranslationRepository.new)
+  def initialize(args, repository: TranslationRepository.new)
     @project = args.delete :project
     @lang = args.delete :lang
     @namespace = args.delete :namespace
     @translation = args
-    @translation_repository = translation_repository
+    @repository = repository
   end
 
   def call
@@ -27,7 +27,9 @@ class AddTranslation
         key: key,
         hint: value
       )
-      translation_repository.persist(trans)
+      has_translation = repository.has_translation?(trans)
+      puts "Dont add double translations" if has_translation
+      repository.persist(trans) unless has_translation
     end
   end
 end

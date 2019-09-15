@@ -1,33 +1,6 @@
-if defined?(Bundler)
-  # we can't use the default Rails behaviour because of our
-  # environments
-  groups = [:default, Environment.env]
-  case
-  when /development/.match?(Environment.env)
-    groups += ['development']
-  when /test/.match?(Environment.env) # MTODO: this hits prepare_test too (bad)
-    groups += ['test']
-  when /production/.match?(Environment.env)
-    groups += ['production']
-  else # this is for staging, install, translation, project
-    groups += ['production']
-  end
-  groups = groups.uniq
-  Bundler.require(*groups)
-end
-Dotenv.load('.env', ".env.#{Environment.env}", ".env.#{Environment.env}.local")
-class Wrapper
-  def self.Pool(pool=nil)
-    @Pool ||= pool
-  end
-  def initialize(app, *args, &block)
-    @app = app
-    self.class.Pool(args.first[:wrapped].new(app, args.first)) unless self.class.Pool
-  end
-  def call(env)
-    self.class.Pool.context(env, @app)
-  end
-end
+require 'yaml'
+require 'erb'
+
 class Application < Grape::API
   # use Wrapper, wrapped: Rack::Session::Pool,
   #              secret: 'super secret',
@@ -71,6 +44,9 @@ class Application < Grape::API
     end
     require File.expand_path("./routes", __dir__)
     mount_apis
+  end
+  def self.database_config
+    @database_config ||= YAML.load(ERB.new(File.read('config/database.yml')).result(binding))[Environment.env]
   end
 end
 Application.boot_application

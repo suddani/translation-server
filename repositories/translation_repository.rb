@@ -1,74 +1,5 @@
 class TranslationRepository
-
-  module Container
-
-    module Storage
-      def subcontainer=(container)
-        @container= container
-      end
-
-      def subcontainer(container=nil)
-        container ? @container = container : @container
-      end
-
-      def key(keys=nil)
-        keys ? @keys = keys : @keys
-      end
-    end
-
-    def self.included(mod)
-      mod.extend Storage
-    end
-
-    def translations
-      @translations ||= {}
-    end
-
-    def <<(translation)
-      if self.class.subcontainer
-        (translations[translation.__send__(self.class.key)]||=self.class.subcontainer.new) << translation
-      else
-        translations[translation.__send__(self.class.key)] = translation
-      end
-    end
-
-    def select(key)
-      if self.class.subcontainer
-        (translations[key]||=self.class.subcontainer.new)
-      else
-        translations[key]
-      end
-    end
-
-    def all
-      translations.values
-    end
-
-    def as_json(opts={})
-      translations
-    end
-    
-    def to_json(opts={})
-      as_json(opts).to_json(opts)
-    end
-  end
-
-  class Namespace
-    include Container
-    key :key
-  end
-
-  class Language
-    include Container
-    subcontainer Namespace
-    key :namespace
-  end
-  class Project
-    include Container
-    subcontainer Language
-    key :lang
-  end
-
+  # class Model < Sequel::Model(:translations); end
   def self.translations
     @translations ||= {}
   end
@@ -77,14 +8,85 @@ class TranslationRepository
   end
 
   def persist(translation)
-    (self.class.translations[translation.project]||=Project.new) << translation
+    puts "Persisting: #{translation.lang}[#{translation.namespace}.#{translation.key}] => #{translation.hint}"
+    new_id = Database.conn.with do |db|
+      db[:translations].insert(translation.as_json(without_translation: true))
+    end
+    Translation.new(translation.as_json.merge(id: new_id))
+  end
+
+  def has_translation?(translation)
+    Database.conn.with do |db|
+      db[:translations].where(
+        project: translation.project,
+        lang: translation.lang,
+        namespace: translation.namespace,
+        key: translation.key
+      ).count
+    end > 0
+  end
+
+  def update(translation)
+    Database.conn.with do |db|
+      db[:translations].
+      where(id: translation.id).
+      update(translation.as_json(
+        without_primary: true,
+        without_translation: true))
+    end
+  end
+
+  def find(id)
+    Database.conn.with do |db|
+      Translation.new db[:translations].first(id: id)
+    end
+  end
+
+  def where(project:, lang:, namespace:)
+    Database.conn.with do |db|
+      db[:translations].where(
+        project: project,
+        lang: lang,
+        namespace: namespace,
+        active: true
+      ).map(&Translation.method(:new))
+    end
+  end
+
+  def groups(project:)
+    Database.conn.with do |db|
+      db[:translations].where(
+        project: project
+      ).select_group(:lang, :namespace)
+    end.all.reduce({}) do |all, entry|
+      (all[entry[:lang]] ||= []) << entry[:namespace]
+      all
+    end
   end
 
   def retrieve(project:, lang:, namespace:)
-    out = self.class.translations[project]&.
-      select(lang)&.
-      select(namespace)&.all || []
-    binding.pry
-    out
+    active_translations = Database.conn.with do |db|
+      db[:translations].where(
+        project: project,
+        lang: lang,
+        namespace: namespace,
+        active: true
+      ).map(&Translation.method(:new)).map do |t|
+        [t.key, t]
+      end
+    end
+    inactive = Database.conn.with do |db|
+      db[:translations].where(
+        project: project,
+        lang: lang,
+        namespace: namespace,
+        active: false
+      ).map(&Translation.method(:new)).map do |t|
+        [t.key, t]
+      end
+    end
+    Hash[inactive].merge(Hash[active_translations]).map do |key, t|
+      t
+    end
   end
 end
