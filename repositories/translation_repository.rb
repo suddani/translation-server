@@ -38,17 +38,17 @@ class TranslationRepository
 
   def find(id)
     Database.conn.with do |db|
-      Translation.new db[:translations].first(id: id)
+      out = db[:translations].first(id: id)
+      return nil unless out
+      Translation.new out
     end
   end
 
-  def where(project:, lang:, namespace:)
+  def where(project:, lang:)
     Database.conn.with do |db|
       db[:translations].where(
         project: project,
-        lang: lang,
-        namespace: namespace,
-        active: true
+        lang: lang
       ).map(&Translation.method(:new))
     end
   end
