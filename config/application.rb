@@ -39,7 +39,11 @@ class Application < Grape::API
   end
   def self.boot_application
     AUTO_LOAD_PATHS.each do |path|
-      Dir[File.join(File.expand_path("../#{path}", __dir__),'**/*.rb')].each do |file|
+      files = Dir[File.join(File.expand_path("../#{path}", __dir__),'**/*.rb')]
+      files.select {|file| file.match(/types\.rb$/)}.each do |file|
+        require file
+      end
+      files.reject {|file| file.match(/types\.rb$/)}.each do |file|
         require file
       end
     end
