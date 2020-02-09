@@ -43,7 +43,10 @@ class Application < Grape::API
       files.select {|file| file.match(/types\.rb$/)}.each do |file|
         require file
       end
-      files.reject {|file| file.match(/types\.rb$/)}.each do |file|
+      files.select {|file| file.match(/helper\.rb$/)}.each do |file|
+        require file
+      end
+      files.reject {|file| file.match(/types\.rb$/)}.reject {|file| file.match(/helper\.rb$/)}.each do |file|
         require file
       end
     end
