@@ -18,6 +18,7 @@ class Application < Grape::API
     header['Access-Control-Allow-Origin'] = '*'
     # header['Access-Control-Request-Method'] = 'p'
     header['Access-Control-Request-Methods'] = '*'
+    header['Access-Control-Allow-Methods'] = '*'
     header['Access-Control-Allow-Headers'] = '*'
   end if Environment.env == :development
   helpers do
