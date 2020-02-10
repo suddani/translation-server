@@ -16,7 +16,7 @@ class Application < Grape::API
   before do
     # CORS
     header['Access-Control-Allow-Origin'] = '*'
-    header['Access-Control-Request-Method'] = 'p'
+    # header['Access-Control-Request-Method'] = 'p'
     header['Access-Control-Request-Methods'] = '*'
     header['Access-Control-Allow-Headers'] = '*'
   end if Environment.env == :development
