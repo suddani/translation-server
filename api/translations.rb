@@ -23,6 +23,7 @@ class Translations < Grape::API
       requires :project, type: String
       requires :id, type: Integer
       requires :value, type: String
+      optional :jwt, type: String
     end
     post ':project/:id' do
       UpdateTranslation.call(declared(params))
