@@ -6,7 +6,7 @@ class GetTranslationGroups
   attr_reader :project,
               :translation_repository
 
-  def initialize(project:, translation_repository: TranslationRepository.new)
+  def initialize(project:, translation_repository: TranslationRepository.new, context: nil)
     @project = project
     @translation_repository = translation_repository
   end

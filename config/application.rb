@@ -27,7 +27,7 @@ class Application < Grape::API
       params: params,
       cookies: cookies,
       session: env["rack.session"],
-      jwk_repository: ListJsonWebKey)
+      jwk_repository: JwkRepository)
   end
 
   rescue_from GlobalContext::Error do |e|

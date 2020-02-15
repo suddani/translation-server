@@ -8,7 +8,7 @@ class GetTranslation
               :namespace,
               :translation_repository
 
-  def initialize(project:, lang:, namespace:, translation_repository: TranslationRepository.new)
+  def initialize(project:, lang:, namespace:, translation_repository: TranslationRepository.new, context: nil)
     @project = project
     @lang = lang
     @namespace = namespace

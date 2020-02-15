@@ -8,7 +8,7 @@ class UpdateTranslation
               :value,
               :translation_repository
 
-  def initialize(project:, id:, value:, translation_repository: TranslationRepository.new)
+  def initialize(project:, id:, value:, translation_repository: TranslationRepository.new, context: nil)
     @project = project
     @id = id
     @value = value
