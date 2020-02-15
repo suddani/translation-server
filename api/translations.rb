@@ -6,7 +6,7 @@ class Translations < Grape::API
       requires :project, type: String
     end
     get 'groups/:project' do
-      GetTranslationGroups.call(declared(params))
+      GetTranslationGroups.call(permitted_params)
     end
 
     params do
@@ -14,7 +14,7 @@ class Translations < Grape::API
       requires :lang, type: String
     end
     get 'groups/:project/:lang' do
-      GetTranslationsForLanguage.call(declared(params))
+      GetTranslationsForLanguage.call(permitted_params)
     end
 
 
@@ -26,7 +26,7 @@ class Translations < Grape::API
       optional :jwt, type: String
     end
     post ':project/:id' do
-      UpdateTranslation.call(declared(params))
+      UpdateTranslation.call(permitted_params)
     end
   end
 end

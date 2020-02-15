@@ -35,5 +35,6 @@ class Wrapper
     self.class.Pool.context(env, @app)
   end
 end
+require File.expand_path('../global_context', __FILE__)
 require File.expand_path('../application', __FILE__)
 require 'openssl'

@@ -21,12 +21,32 @@ class Application < Grape::API
     header['Access-Control-Allow-Methods'] = '*'
     header['Access-Control-Allow-Headers'] = '*'
   end if Environment.env == :development
+
+  before do
+    @context ||= GlobalContext.new(
+      params: params,
+      cookies: cookies,
+      session: env["rack.session"],
+      jwk_repository: ListJsonWebKey)
+  end
+
+  rescue_from GlobalContext::Error do |e|
+    error!({
+      status: e.code,
+      error: e.message
+    }, e.code)
+  end
+
   helpers do
     def session
       env['rack.session']
     end
     def permitted_params
-      declared params
+      return @permitted_params if defined?(@permitted_params)
+      @permitted_params = declared(params)
+      @permitted_params.delete(:jwt)
+      @permitted_params[:context] = @context
+      @permitted_params
     end
   end
   AUTO_LOAD_PATHS = [
