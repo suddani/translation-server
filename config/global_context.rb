@@ -80,7 +80,7 @@ class GlobalContext
   end
 
   def user_roles
-    @user_rights ||= jwt["roles"]
+    @user_roles ||= jwt["roles"]
   end
 
   def user_id
@@ -91,5 +91,6 @@ class GlobalContext
     unless (right != nil && user_rights.include?(right.to_s)) || user_roles.include?("admin")
       error!("You are missing the right: #{right}", 403)
     end
+    true
   end
 end
