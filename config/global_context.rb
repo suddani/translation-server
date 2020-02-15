@@ -8,15 +8,26 @@ class GlobalContext
     end
   end
 
+  def self.createAdmin
+    data = {
+      user_id: -1,
+      rights: [],
+      roles: ["admin"]
+    }
+    new(params: {}, cookies: {}, session: {}, jwk_repository: nil, jwt: data, jwt_unverified: data)
+  end
+
   attr_reader :jwk_repository,
               :params,
               :cookies
 
-  def initialize(params:, cookies:, session:, jwk_repository:)
+  def initialize(params:, cookies:, session:, jwk_repository:, jwt: nil, jwt_unverified: nil)
     @params = params
     @cookies = cookies
     @jwk_repository = jwk_repository
     @session = session
+    @jwt_unverified = jwt_unverified
+    @jwt = jwt
   end
 
   def jwt_issuer
@@ -71,10 +82,16 @@ class GlobalContext
     error ! "InvalidJtiError", 401
   rescue => e
     puts e.class
-    puts e.message
-    error! "Unknown auth error", 401
-  end
+    puts attr_reader :jwk_repository,
+    :params,
+    :cookies
 
+def initialize(params:, cookies:, session:, jwk_repository:)
+@params = params
+@cookies = cookies
+@jwk_repository = jwk_repository
+@session = session
+end
   def user_rights
     @user_rights ||= jwt["rights"]
   end
