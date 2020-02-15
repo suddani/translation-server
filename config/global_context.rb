@@ -82,16 +82,10 @@ class GlobalContext
     error ! "InvalidJtiError", 401
   rescue => e
     puts e.class
-    puts attr_reader :jwk_repository,
-    :params,
-    :cookies
+    puts e.message
+    error! "Unknown auth error", 401
+  end
 
-def initialize(params:, cookies:, session:, jwk_repository:)
-@params = params
-@cookies = cookies
-@jwk_repository = jwk_repository
-@session = session
-end
   def user_rights
     @user_rights ||= jwt["rights"]
   end
