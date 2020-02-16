@@ -19,15 +19,17 @@ class GlobalContext
 
   attr_reader :jwk_repository,
               :params,
-              :cookies
+              :cookies,
+              :headers
 
-  def initialize(params:, cookies:, session:, jwk_repository:, jwt: nil, jwt_unverified: nil)
+  def initialize(params:, cookies:, session:, jwk_repository:, headers: nil, jwt: nil, jwt_unverified: nil)
     @params = params
     @cookies = cookies
     @jwk_repository = jwk_repository
     @session = session
     @jwt_unverified = jwt_unverified
     @jwt = jwt
+    @headers = headers
   end
 
   def jwt_issuer
@@ -38,8 +40,12 @@ class GlobalContext
     @request_id ||= SecureRandom.uuid
   end
 
+  def bearer_header
+    headers && headers["Authorization"] ? headers["Authorization"].split('Bearer ').last : nil
+  end
+
   def jwt_token
-    @jwt_token ||= params[:jwt]||cookies[:jwt]
+    @jwt_token ||= params[:jwt]||cookies[:jwt]||bearer_header
   end
 
   def jwt_unverified
@@ -96,6 +102,10 @@ class GlobalContext
 
   def user_id
     @user_id ||= jwt["user_id"]
+  end
+
+  def user_email
+    @user_email ||= jwt["user_email"]
   end
 
   def can?(right)

@@ -27,6 +27,7 @@ class Application < Grape::API
       params: params,
       cookies: cookies,
       session: env["rack.session"],
+      headers: headers,
       jwk_repository: JwkRepository)
   end
 
