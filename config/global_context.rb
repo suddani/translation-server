@@ -108,6 +108,10 @@ class GlobalContext
     @user_email ||= jwt["user_email"]
   end
 
+  def username
+    @username ||= jwt["username"]
+  end
+
   def can?(right)
     unless (right != nil && user_rights.include?(right.to_s)) || user_roles.include?("admin")
       error!("You are missing the right: #{right}", 403)
