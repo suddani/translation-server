@@ -22,7 +22,7 @@ if defined?(Bundler)
   groups = groups.uniq
   Bundler.require(*groups)
 end
-Dotenv.load('.env', ".env.#{Environment.env}", ".env.#{Environment.env}.local")
+Dotenv.load(".env.#{Environment.env}.local", ".env.#{Environment.env}", '.env')
 class Wrapper
   def self.Pool(pool=nil)
     @Pool ||= pool
