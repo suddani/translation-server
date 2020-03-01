@@ -37,7 +37,8 @@ class GlobalContext
     query_lang = params&.dig('lang')
     refer_lang_match = headers&.dig('Referer')&.match(/\?lang=(\w+)/)
     refer_lang = refer_lang_match ? refer_lang_match[1] : nil
-    query_lang || refer_lang || header_language || 'en'
+    lang = query_lang || refer_lang || header_language || 'en'
+    lang.split('-').each_with_index.map {|l,idx| idx == 0 ? l : l.upcase}.join('-')
   end
 
   def jwt_issuer
