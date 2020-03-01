@@ -8,7 +8,7 @@ class GlobalContext
     end
   end
 
-  def self.createAdmin
+  def self.create_admin
     data = {
       user_id: -1,
       rights: [],
