@@ -32,6 +32,14 @@ class GlobalContext
     @headers = headers
   end
 
+  def language
+    header_language = headers&.dig('Accept-Language')&.split(';')&.first&.split(',')&.first
+    query_lang = params&.dig('lang')
+    refer_lang_match = headers&.dig('Referer')&.match(/\?lang=(\w+)/)
+    refer_lang = refer_lang_match ? refer_lang_match[1] : nil
+    query_lang || refer_lang || header_language || 'en'
+  end
+
   def jwt_issuer
     ENV['JWT_ISSUER']||"https://jca.experteer.com/assembly_line"
   end
