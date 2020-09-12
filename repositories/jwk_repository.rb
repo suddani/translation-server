@@ -7,7 +7,11 @@ class JwkRepository
     @cached ||= load_data
   end
 
-  def self.call
-    cached
+  def self.call(options)
+    if options[:invalidate]
+      @cached = load_data
+    else 
+      cached
+    end
   end
 end
