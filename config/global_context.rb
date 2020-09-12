@@ -73,7 +73,7 @@ class GlobalContext
   def jwt
     @jwt ||= JWT.decode(
       jwt_token, nil, true,
-      { algorithms: ['RS256', 'RS512'], jwks: jwk_repository.call}
+      { algorithms: ['RS256', 'RS512'], jwks: jwk_repository}
     )[0]
   rescue JWT::ExpiredSignature
     error! "Signature Invalid", 401
